@@ -1,18 +1,28 @@
 ---
-- name: jfrog dependecy
-  command: 'sudo apt-get update -y'
-  command: 'sudo apt-get install default-jdk  -y'
+- hosts: localhost
+  tasks:
+    - name: jfrog dependecy
+      command: 'sudo apt-get update -y'
+      command: 'sudo apt-get install default-jdk  -y'
+      command: 'sudo apt-get install wget  -y'
 
-- name: java setup
-  command: 'sudo python java.py'
+    - name: java setup
+      command: 'sudo python java.py'
 
-- name: Jfrog Package and START service
-  command: 'mkdir /root/jfrog'
-  command: 'cd /root/jfrog'
-  command: 'wget https://bintray.com/artifact/download/jfrog/artifactory-debs/pool/main/j/jfrog-artifactory-oss-deb/jfrog-artifactory-oss-6.10.1.deb'
-  command: 'gpg –keyserver pgpkeys.mit.edu –recv-key 6B219DCCD7639232'
-  command: 'gpg -a –export 6B219DCCD7639232 | sudo apt-key add –'
-  command: 'apt-get update'
-  command: 'dpkg -i jfrog-artifactory-oss-4.8.0.deb'
-  command: 'systemctl start artifactory'
+    - name: jfrog path
+      file:
+       path: /root/jfrog
+       state: directory
 
+    - name: fetch package
+      get_url:
+        url: https://bintray.com/artifact/download/jfrog/artifactory-debs/pool/main/j/jfrog-artifactory-oss-deb/jfrog-artifactory-oss-6.10.1.deb
+        dest: /root/jfrog
+
+    - name:
+      shell: 'sudo apt-get update -y'
+
+    - name: install dpkg
+      command: dpkg -i  /root/jfrog/jfrog-artifactory-oss-6.10.1.deb
+    - name:
+      command: systemctl start artifactory
